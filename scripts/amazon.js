@@ -1,4 +1,9 @@
-import { cart } from '../data/cart.js';
+import {
+  cart,
+  calculateCartQuantity,
+  updateCartQuantityDisplay,
+  addToCart,
+} from '../data/cart.js';
 import { products } from '../data/products.js';
 
 let productsHTML = '';
@@ -60,39 +65,19 @@ products.forEach((product) => {
 
 document.querySelector('.js-products-grid').innerHTML = productsHTML;
 
-// Function to calculate total cart quantity
-function calculateCartQuantity() {
-  let totalQuantity = 0;
-  cart.forEach((item) => {
-    totalQuantity += item.quantity;
-  });
-  return totalQuantity;
-}
-
-// Function to update cart quantity display
-function updateCartQuantityDisplay() {
-  const cartQuantity = calculateCartQuantity();
-  document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
-}
-
 // Initialize cart quantity display
 updateCartQuantityDisplay();
 
 document.querySelectorAll('.js-add-to-cart').forEach((button) => {
   button.addEventListener('click', () => {
     const productID = button.dataset.productId;
-    const selectedQuantity = Number(document.querySelector(`.js-quantity-selector-${productID}`).value);
+    const selectedQuantity = Number(
+      document.querySelector(`.js-quantity-selector-${productID}`).value
+    );
     const productToAdd = products.find((product) => product.id === productID);
     const existingItem = cart.find((item) => item.product.id === productID);
-    
-    if (existingItem) {
-      existingItem.quantity += selectedQuantity;
-    } else {
-      cart.push({
-        product: productToAdd,
-        quantity: selectedQuantity,
-      });
-    }
+
+    addToCart(productToAdd, selectedQuantity);
 
     console.log('Cart updated:', cart);
     console.log('Total quantity:', calculateCartQuantity());
