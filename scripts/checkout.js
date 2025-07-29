@@ -1,11 +1,10 @@
-import { cart } from '../data/cart.js';
-console.log('checkout.js loaded');
-console.log('Cart contents:', cart);
+import { cart, removeItem } from '../data/cart.js';
 
-let cartItemsHTML = '';
+function displayCartItems() {
+  let cartItemsHTML = '';
 
-cart.forEach((cartItem) => {
-  cartItemsHTML += `
+  cart.forEach((cartItem) => {
+    cartItemsHTML += `
     <div class="cart-item-container">
             <div class="delivery-date">Delivery date: Tuesday, June 21</div>
 
@@ -27,7 +26,9 @@ cart.forEach((cartItem) => {
                   <span class="update-quantity-link link-primary">
                     Update
                   </span>
-                  <span class="delete-quantity-link link-primary">
+                  <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${
+                    cartItem.product.id
+                  }">
                     Delete
                   </span>
                 </div>
@@ -75,6 +76,27 @@ cart.forEach((cartItem) => {
             </div>
           </div>
           `;
-});
+  });
 
-document.querySelector('.js-cart-details').innerHTML = cartItemsHTML;
+  document.querySelector('.js-cart-details').innerHTML = cartItemsHTML;
+}
+displayCartItems();
+attachDeleteListeners();
+
+function attachDeleteListeners() {
+  document.querySelectorAll('.js-delete-link').forEach((link) => {
+    link.addEventListener('click', () => {
+      const productID = link.dataset.productId;
+      console.log(productID);
+      removeItem(productID);
+      const container = document.querySelector(
+        `.js-cart-item-container-${productID}`
+      );
+      if (container) {
+        container.remove();
+      }
+      displayCartItems();
+      attachDeleteListeners();
+    });
+  });
+}
